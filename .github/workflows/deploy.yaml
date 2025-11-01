@@ -17,18 +17,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Log in to GHCR
-        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build and push backend
-        run: |
-          docker build -t $GHCR/sample-backend:$IMAGE_TAG ./backend
-          docker push $GHCR/sample-backend:$IMAGE_TAG
-
-      - name: Build and push frontend
-        run: |
-          docker build -t $GHCR/sample-frontend:$IMAGE_TAG ./frontend
-          docker push $GHCR/sample-frontend:$IMAGE_TAG
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
