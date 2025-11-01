@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-app.fullname" . }}-postgres
+  labels: {{- include "my-app.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "my-app.name" . }}
+      app.kubernetes.io/component: postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "my-app.name" . }}
+        app.kubernetes.io/component: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.db.image }}"
+          env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.db.name }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.db.user }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.db.password }}"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "my-app.fullname" . }}-postgres-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "my-app.fullname" . }}-postgres-pvc
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: {{ .Values.db.storageSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "my-app.fullname" . }}-postgres
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "my-app.name" . }}
+    app.kubernetes.io/component: postgres
+  ports:
+    - name: db
+      port: 5432
+      targetPort: 5432

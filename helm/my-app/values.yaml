@@ -1,0 +1,29 @@
+backend:
+  image:
+    repository: yourrepo/myapp-backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    port: 3000
+
+frontend:
+  image:
+    repository: yourrepo/myapp-frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    port: 80
+
+db:
+  image: "postgres:15"
+  name: "appdb"
+  user: "app"
+  password: "apppass"
+  storageSize: "1Gi"
+
+ingress:
+  enabled: false
+  className: nginx
+  host: myapp.example.com
