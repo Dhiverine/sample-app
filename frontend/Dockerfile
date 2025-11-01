@@ -1,4 +1,12 @@
-FROM nginx:1.25-alpine
-COPY index.html /usr/share/nginx/html/index.html
-COPY default.conf /etc/nginx/conf.d/default.conf
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install express
+
 EXPOSE 80
+
+CMD ["node", "server.js"]
